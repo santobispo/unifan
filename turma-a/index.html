@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Cristóvão - Plataforma de Gestão Omnichannel</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f5f7fb;
+            color: #1a2a3a;
+            overflow-x: hidden;
+        }
+
+        /* Header com identidade Cristóvão */
+        .top-bar {
+            background: linear-gradient(135deg, #1a3c2c 0%, #0f2a1e 100%);
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo-area h1 {
+            font-size: 24px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-area h1 i {
+            font-size: 28px;
+        }
+
+        .logo-area p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .metrics-header {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .metric-chip {
+            background: rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 8px 16px;
+            text-align: center;
+        }
+
+        .metric-chip .value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .metric-chip .label {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+
+        /* Navegação por Squads */
+        .squad-nav {
+            background: white;
+            padding: 12px 32px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #e0e7ed;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+
+        .squad-btn {
+            background: transparent;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #4a5b6e;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .squad-btn i {
+            font-size: 16px;
+        }
+
+        .squad-btn:hover {
+            background: #eef2f8;
+        }
+
+        .squad-btn.active {
+            background: #1a3c2c;
+            color: white;
+        }
+
+        /* Dashboard Principal */
+        .dashboard {
+            padding: 24px 32px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .squad-view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .squad-view.active-view {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Grid de cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+            border: 1px solid #edf2f7;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f4f9;
+        }
+
+        .card-header h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a3c2c;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        /* Métricas */
+        .kpi-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 16px;
+        }
+
+        .kpi-card {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 16px;
+        }
+
+        .kpi-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a3c2c;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: #6b7a88;
+            margin-top: 4px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            background: #1a3c2c;
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.orange {
+            background: #ff9800;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f4f9;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: #1a3c2c;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 16px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-secondary {
+            background: #eef2f8;
+            color: #1a3c2c;
+        }
+
+        .btn:hover {
+            background: #0f2a1e;
+            transform: scale(0.98);
+        }
+
+        .order-list {
+            margin: 12px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f4f9;
+            font-size: 14px;
+        }
+
+        /* Mapa */
+        #logistics-map {
+            height: 280px;
+            border-radius: 16px;
+            margin: 16px 0;
+            z-index: 1;
+        }
+
+        .chart-container {
+            height: 200px;
+            margin: 16px 0;
+            position: relative;
+        }
+
+        /* Tabela */
+        .data-table {
+            width: 100%;
+            font-size: 13px;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .data-table th {
+            font-weight: 600;
+            color: #4a5b6e;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .status-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .status-info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        @media (max-width: 860px) {
+            .top-bar, .squad-nav, .dashboard {
+                padding-left: 16px;
+                padding-right: 16px;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div class="logo-area">
+            <h1><i class="fas fa-hard-hat"></i> Cristóvão</h1>
+            <p>Materiais de Construção · Gestão Omnichannel</p>
+        </div>
+        <div class="metrics-header">
+            <div class="metric-chip">
+                <div class="value">5.000+</div>
+                <div class="label">SKUs Ativos</div>
+            </div>
+            <div class="metric-chip">
+                <div class="value">R$ 2.4M</div>
+                <div class="label">Faturamento Mensal</div>
+            </div>
+            <div class="metric-chip">
+                <div class="value">98%</div>
+                <div class="label">Acurácia Estoque</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="squad-nav">
+        <button class="squad-btn active" data-squad="vendas"><i class="fas fa-cash-register"></i> Vendas & PDV</button>
+        <button class="squad-btn" data-squad="financeiro"><i class="fas fa-chart-line"></i> Financeiro</button>
+        <button class="squad-btn" data-squad="producao"><i class="fas fa-tools"></i> Produção & OS</button>
+        <button class="squad-btn" data-squad="estoque"><i class="fas fa-boxes"></i> Estoque</button>
+        <button class="squad-btn" data-squad="logistica"><i class="fas fa-truck"></i> Logística</button>
+        <button class="squad-btn" data-squad="compras"><i class="fas fa-shopping-cart"></i> Compras</button>
+    </div>
+
+    <div class="dashboard">
+        <!-- SQUAD VENDAS -->
+        <div id="vendas-view" class="squad-view active-view">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cash-register"></i> PDV Inteligente</h3>
+                        <span class="badge">Online · 3 terminais</span>
+                    </div>
+                    <div class="kpi-row">
+                        <div class="kpi-card">
+                            <div class="kpi-value">156</div>
+                            <div class="kpi-label">Vendas Hoje</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">R$ 42k</div>
+                            <div class="kpi-label">Ticket Médio</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">8 min</div>
+                            <div class="kpi-label">Tempo Checkout</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span><i class="fas fa-barcode"></i> Leitor Código Barras</span>
+                        <span class="badge">Ativo</span>
+                    </div>
+                    <div class="info-row">
+                        <span><i class="fas fa-mobile-alt"></i> Catálogo Digital Móvel</span>
+                        <span>32 consultas/hora</span>
+                    </div>
+                    <div class="info-row">
+                        <span><i class="fab fa-whatsapp"></i> Bot de Atendimento</span>
+                        <span>87 conversas hoje</span>
+                    </div>
+                    <button class="btn"><i class="fas fa-plus"></i> Nova Venda</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-simple"></i> Performance de Vendas</h3>
+                        <span class="badge">Meta Mensal: R$ 2.5M</span>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="vendasChart"></canvas>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 76%"></div>
+                    </div>
+                    <div class="info-row">
+                        <span>Produtos Mais Vendidos</span>
+                        <span>Cimento · Tijolo · Areia</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-headset"></i> Atendimento Omnichannel</h3>
+                    </div>
+                    <div class="order-list">
+                        <div class="order-item">
+                            <span><i class="fab fa-whatsapp"></i> WhatsApp</span>
+                            <strong>45 atendimentos</strong>
+                        </div>
+                        <div class="order-item">
+                            <span><i class="fas fa-store"></i> Balcão</span>
+                            <strong>78 atendimentos</strong>
+                        </div>
+                        <div class="order-item">
+                            <span><i class="fas fa-phone-alt"></i> Telefone</span>
+                            <strong>33 atendimentos</strong>
+                        </div>
+                    </div>
+                    <div class="alert" style="background:#e8f5e9; border-left:4px solid #4caf50; padding:12px; border-radius:12px; margin-top:12px;">
+                        <i class="fas fa-robot"></i> Bot respondeu 82% das perguntas automaticamente
+                    </div>
+                    <button class="btn btn-secondary"><i class="fas fa-file-alt"></i> Manual de Usabilidade</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQUAD FINANCEIRO -->
+        <div id="financeiro-view" class="squad-view">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-calculator"></i> Margem Segura</h3>
+                        <span class="badge">Algoritmo Ativo</span>
+                    </div>
+                    <div class="kpi-row">
+                        <div class="kpi-card">
+                            <div class="kpi-value">42%</div>
+                            <div class="kpi-label">Margem Média</div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-value">R$ 87k</div>
+                            <div class="kpi-label">Descontos Concedidos</div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <span>Categoria Cimento</span>
+                        <span>Margem: 35% | Desc. Máx: 8%</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Categoria Tijolo</span>
+                        <span>Margem: 40% | Desc. Máx: 12%</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Categoria Madeira</span>
+                        <span>Margem: 48% | Desc. Máx: 15%</span>
+                    </div>
+                    <button class="btn"><i class="fas fa-percent"></i> Simular Desconto</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-credit-card"></i> Fluxo de Pagamentos</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="pagamentosChart"></canvas>
+                    </div>
+                    <div class="info-row">
+                        <span>Pix</span>
+                        <span>45% das vendas</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Cartão Crédito</span>
+                        <span>32% das vendas</span>
+                    </div>
+                    <div class="info-row">
+                        <span>Boleto</span>
+                        <span>15% das vendas</span>
+                    </div>
+                    <button class="btn btn-secondary"><i class="fas fa-chart-line"></i> Relatório Financeiro</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-pie"></i> Rentabilidade por Categoria</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="rentabilidadeChart"></canvas>
+                    </div>
+                    <button class="btn btn-secondary"><i class="fas fa-download"></i> Exportar Dados</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQUAD PRODUÇÃO (Customização & OS) -->
+        <div id="producao-view" class="squad-view">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clipboard-list"></i> Ordens de Serviço</h3>
+                        <span class="badge">15 ativas</span>
+                    </div>
+                    <div class="order-list">
+                        <div class="order-item">
+                            <span>OS-2401 - Corte Madeira</span>
+                            <span class="status-badge status-warning">Em andamento</span>
+                        </div>
+                        <div class="order-item">
+                            <span>OS-2402 - Pintura</span>
+                            <span class="status-badge status-info">Aguardando Material</span>
+                        </div>
+                        <div class="order-item">
+                            <span>OS-2403 - Customização Porta</span>
+                            <span class="status-badge status-success">Concluída</span>
+                        </div>
+                    </div>
+                    <button class="btn"><i class="fas fa-plus"></i> Nova Ordem de Serviço</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chalkboard"></i> Kanban Produção</h3>
+                    </div>
+                    <div style="display:flex; gap:12px; justify-content:space-between;">
+                        <div style="flex:1; background:#f8fafc; border-radius:12px; padding:12px;">
+                            <strong>📋 A Fazer</strong>
+                            <div class="order-item">Corte 50x</div>
+                            <div class="order-item">Lixamento</div>
+                        </div>
+                        <div style="flex:1; background:#f8fafc; border-radius:12px; padding:12px;">
+                            <strong>⚙️ Fazendo</strong>
+                            <div class="order-item">Montagem 30x</div>
+                        </div>
+                        <div style="flex:1; background:#f8fafc; border-radius:12px; padding:12px;">
+                            <strong>✅ Concluído</strong>
+                            <div class="order-item">Entrega OS-2403</div>
+                        </div>
+                    </div>
+                    <div class="progress-bar mt-3">
+                        <div class="progress-fill" style="width: 65%"></div>
+                    </div>
+                    <div class="info-row">Produtividade: 65% · Meta: 80%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQUAD ESTOQUE -->
+        <div id="estoque-view" class="squad-view">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-database"></i> Endereçamento Logístico</h3>
+                        <span class="badge">95% mapeado</span>
+                    </div>
+                    <div class="info-row">Rua A (Cimento)</div>
+                    <div class="info-row">Rua B (Tijolo)</div>
+                    <div class="info-row">Prateleira 3 (Ferragens)</div>
+                    <button class="btn btn-secondary"><i class="fas fa-map"></i> Mapa de Endereçamento</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-qrcode"></i> Gerador SKU/Etiquetas</h3>
+                    </div>
+                    <div class="kpi-row">
+                        <div class="kpi-card">5.234 SKUs</div>
+                        <div class="kpi-card">98% etiquetados</div>
+                    </div>
+                    <button class="btn"><i class="fas fa-print"></i> Gerar Lote de Etiquetas</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-mobile-alt"></i> Inventário Cíclico</h3>
+                    </div>
+                    <div class="order-list">
+                        <div class="order-item">✅ Cimento - 05/03</div>
+                        <div class="order-item">🔄 Tijolo - Em andamento</div>
+                        <div class="order-item">⏳ Areia - 12/03</div>
+                    </div>
+                    <button class="btn btn-secondary"><i class="fas fa-camera"></i> App Inventário</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQUAD LOGÍSTICA -->
+        <div id="logistica-view" class="squad-view">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-map-marked-alt"></i> Roteirização de Entregas</h3>
+                    </div>
+                    <div id="logistics-map"></div>
+                    <div class="info-row">🚚 Caminhões em rota: 4</div>
+                    <div class="info-row">📦 Entregas hoje: 22</div>
+                    <button class="btn"><i class="fas fa-route"></i> Otimizar Rotas</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clipboard-list"></i> Lista de Pedidos (Encomendas)</h3>
+                    </div>
+                    <div class="order-list">
+                        <div class="order-item">Cliente A - 50 sacos cimento</div>
+                        <div class="order-item">Cliente B - 1000 tijolos</div>
+                        <div class="order-item">Construtora C - 3 caminhões</div>
+                    </div>
+                    <button class="btn btn-secondary"><i class="fas fa-truck"></i> Programar Encomendas</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SQUAD COMPRAS -->
+        <div id="compras-view" class="squad-view">
+            <div class="grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Alertas Estoque Crítico</h3>
+                    </div>
+                    <div class="alert" style="background:#ffebee; border-left-color:#f44336;">⚠️ Cimento CPII - abaixo do mínimo</div>
+                    <div class="alert" style="background:#fff3e0;">⚠️ Tijolo 8 furos - estoque baixo</div>
+                    <button class="btn"><i class="fas fa-bell"></i> Configurar Alertas</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Curva ABC</h3>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="curvaABCChart"></canvas>
+                    </div>
+                    <button class="btn btn-secondary"><i class="fas fa-chart-simple"></i> Dashboard Compras</button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-truck"></i> Matriz de Fornecedores</h3>
+                    </div>
+                    <div class="order-list">
+                        <div class="order-item">Votorantim - Cimento</div>
+                        <div class="order-item">Cerâmica XYZ - Tijolos</div>
+                        <div class="order-item">Madeireira Sul - Madeira</div>
+                    </div>
+                    <button class="btn"><i class="fas fa-chart-bar"></i> Comparar Preços</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navegação entre Squads
+        const buttons = document.querySelectorAll('.squad-btn');
+        const views = document.querySelectorAll('.squad-view');
+
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const squad = btn.dataset.squad;
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                views.forEach(view => view.classList.remove('active-view'));
+                document.getElementById(`${squad}-view`).classList.add('active-view');
+                
+                // Reinicializar mapa se necessário
+                if (squad === 'logistica') {
+                    setTimeout(() => { if (window.map) window.map.invalidateSize(); }, 100);
+                }
+            });
+        });
+
+        // GRÁFICOS
+
+        // Vendas
+        new Chart(document.getElementById('vendasChart'), {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                datasets: [{ label: 'Vendas (R$ mil)', data: [180, 210, 245, 230, 270, 285], borderColor: '#1a3c2c', fill: true, tension: 0.3 }]
+            },
+            options: { responsive: true, maintainAspectRatio: true }
+        });
+
+        // Pagamentos
+        new Chart(document.getElementById('pagamentosChart'), {
+            type: 'doughnut',
+            data: { labels: ['Pix', 'Cartão Crédito', 'Boleto', 'Dinheiro'], datasets: [{ data: [45, 32, 15, 8], backgroundColor: ['#1a3c2c', '#ff9800', '#2196f3', '#9e9e9e'] }] }
+        });
+
+        // Rentabilidade
+        new Chart(document.getElementById('rentabilidadeChart'), {
+            type: 'bar',
+            data: { labels: ['Cimento', 'Tijolo', 'Madeira', 'Ferragens'], datasets: [{ label: 'Margem (%)', data: [35, 40, 48, 38], backgroundColor: '#1a3c2c' }] }
+        });
+
+        // Curva ABC
+        new Chart(document.getElementById('curvaABCChart'), {
+            type: 'bar',
+            data: { labels: ['A (70%)', 'B (20%)', 'C (10%)'], datasets: [{ label: 'Participação no faturamento', data: [70, 20, 10], backgroundColor: ['#1a3c2c', '#ff9800', '#e0e0e0'] }] }
+        });
+
+        // MAPA LOGÍSTICA
+        var map = L.map('logistics-map').setView([-23.5505, -46.6333], 12);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>' }).addTo(map);
+        L.marker([-23.5505, -46.6333]).bindPopup('Loja Cristóvão').addTo(map);
+        L.marker([-23.6000, -46.6500]).bindPopup('Cliente A - Entrega').addTo(map);
+        L.marker([-23.5200, -46.6200]).bindPopup('Cliente B - Entrega').addTo(map);
+        window.map = map;
+    </script>
+</body>
+</html>
