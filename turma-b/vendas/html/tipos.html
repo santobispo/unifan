@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tipos de item — Vendas</title>
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div id="toast-container" aria-live="polite"></div>
+    <header id="site-header"></header>
+
+    <main class="page-wrap">
+      <div class="toolbar">
+        <div>
+          <h1 class="page-title">Tipos de item</h1>
+          <p class="page-sub">Categorias para classificar os itens.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap">
+          <span class="toolbar__info"><span id="count-tipos">0</span> cadastrados</span>
+          <button type="button" class="btn btn--amber" id="btn-novo-tipo">+ Novo tipo</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>Descrição</th>
+              <th>ID</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-tipos"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <div id="modal-tipo" class="modal-overlay" aria-hidden="true">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-tipo-title">
+        <div class="modal-head">
+          <div>
+            <h2 id="modal-tipo-title">Novo tipo</h2>
+            <p id="modal-tipo-sub">Nome e descrição são obrigatórios</p>
+          </div>
+          <button type="button" class="modal-close" id="btn-cancel-tipo-x" aria-label="Fechar">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="f-tipo-nome">Nome <span style="color: #b91c1c">*</span></label>
+            <input id="f-tipo-nome" class="field-input" type="text" maxlength="255" autocomplete="off" />
+          </div>
+          <div class="field">
+            <label for="f-tipo-desc">Descrição <span style="color: #b91c1c">*</span></label>
+            <textarea id="f-tipo-desc" class="field-input" rows="3" maxlength="255"></textarea>
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn--ghost" id="btn-cancel-tipo">Cancelar</button>
+          <button type="button" class="btn btn--primary" id="btn-save-tipo">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-confirm-delete-tipo" class="modal-overlay" aria-hidden="true">
+      <div class="modal-box" style="max-width: 22rem" role="dialog" aria-modal="true">
+        <div class="modal-body" style="text-align: center; padding-top: 2rem; padding-bottom: 1rem">
+          <h3 class="font-display" style="margin: 0 0 0.5rem">Excluir tipo?</h3>
+          <p style="margin: 0; font-size: 0.875rem; color: var(--ink-muted)">Itens podem depender deste tipo.</p>
+        </div>
+        <div class="modal-foot" style="justify-content: center">
+          <button type="button" class="btn btn--ghost" id="btn-del-tipo-no">Cancelar</button>
+          <button type="button" class="btn btn--danger" id="btn-del-tipo-yes">Excluir</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/tipos-page.js"></script>
+    <script>
+      document.getElementById('btn-cancel-tipo-x').addEventListener('click', function () {
+        window.VendasApp.closeModal('modal-tipo');
+      });
+    </script>
+  </body>
+</html>

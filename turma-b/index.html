@@ -10,6 +10,10 @@
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <!-- API do módulo vendas (mesma base URL que vendas/js/config.js) -->
+    <script src="vendas/js/config.js"></script>
+    <script src="vendas/js/api.js"></script>
+    <script src="vendas/js/reciclometro-vendas-card.js"></script>
     
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -302,41 +306,37 @@
         </div>
 
         <div class="grid">
-            <!-- CARD VENDAS -->
-            <div class="card">
+            <!-- CARD VENDAS (integrado ao módulo vendas + API relatórios) -->
+            <div class="card" id="card-vendas-api">
                 <div class="card-header">
                     <h2>💰 Vendas & Leads</h2>
-                    <span class="badge">Meta: 50T</span>
+                    <span class="badge" id="vendas-card-badge">Módulo vendas</span>
                 </div>
                 <div class="metric-large">
-                    <div class="metric-value">R$ 52.000</div>
-                    <div class="metric-label">Total de Vendas de Créditos de Carbono</div>
-                    <span class="trend-up">▲ +12% vs mês anterior</span>
+                    <div class="metric-value" id="vendas-metric-total">—</div>
+                    <div class="metric-label">Total geral de vendas</div>
+                    <span class="trend-up" id="vendas-metric-sub">Resumo do módulo de vendas</span>
                 </div>
                 
-                <!-- Gráfico de Vendas -->
                 <div class="chart-container">
                     <canvas id="salesChart"></canvas>
                 </div>
+                <p id="vendas-chart-hint" style="font-size:12px;color:#6b7a88;text-align:center;margin:4px 0 8px;">Total por tipo de item (R$)</p>
                 
                 <div class="info-row">
-                    <span class="info-label">Volume Comercializado</span>
-                    <span class="info-value">45 Toneladas</span>
+                    <span class="info-label">Quantidade vendida</span>
+                    <span class="info-value" id="vendas-qtd-val">—</span>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-bar" style="width: 90%"></div>
+                    <div class="progress-bar" id="vendas-progress-fill" style="width: 0%"></div>
                 </div>
-                <div class="order-list">
-                    <div class="order-item">
-                        <span>📦 Cliente X</span>
-                        <strong>10T</strong>
-                    </div>
-                    <div class="order-item">
-                        <span>📋 Proposta p/ Cliente Y</span>
-                        <strong>5T</strong>
-                    </div>
+                <div class="order-list" id="vendas-top-itens-list">
+                    <div class="order-item"><span>Carregando itens…</span></div>
                 </div>
-                <button class="btn">+ Novo Pedido</button>
+                <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;">
+                    <a class="btn" href="vendas/html/index.html" style="text-decoration:none;display:inline-block;text-align:center;">📊 Dashboard vendas</a>
+                    <a class="btn btn-secondary" href="vendas/html/vendas.html" style="text-decoration:none;display:inline-block;text-align:center;">+ Nova venda</a>
+                </div>
             </div>
 
             <!-- CARD COMPRAS -->
@@ -552,30 +552,11 @@
         // Inicializar todos os gráficos quando a página carregar
         document.addEventListener('DOMContentLoaded', function() {
             
-            // Gráfico de Vendas (últimos 6 meses)
-            const salesCtx = document.getElementById('salesChart').getContext('2d');
-            new Chart(salesCtx, {
-                type: 'line',
-                data: {
-                    labels: ['Out', 'Nov', 'Dez', 'Jan', 'Fev', 'Mar'],
-                    datasets: [{
-                        label: 'Vendas (R$ mil)',
-                        data: [32, 38, 42, 48, 50, 52],
-                        borderColor: '#4caf50',
-                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                        tension: 0.4,
-                        fill: true
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: true,
-                    plugins: {
-                        legend: { position: 'top' }
-                    }
-                }
-            });
-            
+            // Card de vendas: lógica em vendas/js/reciclometro-vendas-card.js
+            if (window.VendasApp && typeof window.VendasApp.initReciclometroVendasCard === 'function') {
+                window.VendasApp.initReciclometroVendasCard();
+            }
+
             // Gráfico de Compras
             const purchasesCtx = document.getElementById('purchasesChart').getContext('2d');
             new Chart(purchasesCtx, {
