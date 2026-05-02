@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vendas — Start Solidarium</title>
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div id="toast-container" aria-live="polite"></div>
+    <header id="site-header"></header>
+
+    <main class="page-wrap">
+      <div class="toolbar">
+        <div>
+          <h1 class="page-title">Vendas</h1>
+          <p class="page-sub">Pedidos com cliente e itens. Confirme ou cancele vendas pendentes.</p>
+        </div>
+        <button type="button" class="btn btn--amber" id="btn-nova-venda">+ Nova venda</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Data</th>
+              <th>Cliente</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Itens</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-vendas"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <div id="modal-venda" class="modal-overlay" aria-hidden="true">
+      <div class="modal-box modal-box--wide" role="dialog" aria-modal="true" aria-labelledby="modal-venda-title">
+        <div class="modal-head">
+          <div>
+            <h2 id="modal-venda-title">Nova venda</h2>
+            <p id="modal-venda-sub">Escolha o cliente, a data e os itens</p>
+          </div>
+          <button type="button" class="modal-close" id="btn-cancel-venda-x" aria-label="Fechar">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="field">
+              <label for="f-venda-data">Data <span style="color: #b91c1c">*</span></label>
+              <input id="f-venda-data" class="field-input" type="date" />
+            </div>
+            <div class="field">
+              <label for="f-venda-cliente">Cliente <span style="color: #b91c1c">*</span></label>
+              <select id="f-venda-cliente" class="field-input"></select>
+            </div>
+          </div>
+          <p style="font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-muted); margin: 1rem 0 0.5rem">Itens</p>
+          <div id="venda-linhas"></div>
+          <button type="button" class="btn btn--ghost btn--sm" id="btn-add-linha" style="margin-top: 0.5rem">+ Adicionar linha</button>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn--ghost" id="btn-cancel-venda">Cancelar</button>
+          <button type="button" class="btn btn--primary" id="btn-save-venda">Registrar venda</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/vendas-page.js"></script>
+    <script>
+      document.getElementById('btn-cancel-venda-x').addEventListener('click', function () {
+        window.VendasApp.closeModal('modal-venda');
+      });
+    </script>
+  </body>
+</html>

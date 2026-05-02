@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard — Vendas</title>
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div id="toast-container" aria-live="polite"></div>
+    <header id="site-header"></header>
+
+    <main class="page-wrap">
+      <h1 class="page-title">Dashboard</h1>
+      <p class="page-sub">Visão geral dos totais de vendas e da participação por item e por tipo.</p>
+
+      <div id="error-banner" class="banner-error" role="alert">
+        <span>⚠</span>
+        <div>
+          <strong>Não foi possível carregar os dados.</strong>
+          <p id="error-detail" style="margin: 0.35rem 0 0; font-size: 0.8rem"></p>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <p class="stat-card__label">Total geral de vendas (R$)</p>
+          <p class="stat-card__value" id="stat-total">—</p>
+          <p class="stat-card__hint">Soma dos valores confirmados / relatório.</p>
+        </div>
+        <div class="stat-card">
+          <p class="stat-card__label">Quantidade vendida (unidades)</p>
+          <p class="stat-card__value" id="stat-qtd">—</p>
+          <p class="stat-card__hint">Itens somados no período do relatório.</p>
+        </div>
+      </div>
+
+      <div class="charts-row">
+        <div class="chart-panel">
+          <h3>Total por item (barras)</h3>
+          <div class="chart-canvas-wrap">
+            <canvas id="chart-barras" width="800" height="560" aria-label="Gráfico de barras por item"></canvas>
+          </div>
+        </div>
+        <div class="chart-panel">
+          <h3>Total por tipo (pizza)</h3>
+          <div class="chart-canvas-wrap">
+            <canvas id="chart-pizza" width="800" height="560" aria-label="Gráfico circular por tipo"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-tables">
+        <div>
+          <h3 class="subpanel-title">Detalhe por item</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qtd</th>
+                  <th>Valor unit.</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-itens"></tbody>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3 class="subpanel-title">Detalhe por tipo</h3>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Tipo</th>
+                  <th>Qtd</th>
+                  <th>Total (R$)</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-tipos"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/charts.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/dashboard.js"></script>
+  </body>
+</html>

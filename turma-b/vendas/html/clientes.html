@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clientes — Vendas</title>
+    <link rel="stylesheet" href="../css/main.css" />
+  </head>
+  <body>
+    <div id="toast-container" aria-live="polite"></div>
+    <header id="site-header"></header>
+
+    <main class="page-wrap">
+      <div class="toolbar">
+        <div>
+          <h1 class="page-title">Clientes</h1>
+          <p class="page-sub">Cadastro, edição, ativar/desativar ou exclusão permanente.</p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap">
+          <span class="toolbar__info"><span id="count-clientes">0</span> cadastrados</span>
+          <button type="button" class="btn btn--amber" id="btn-novo-cliente">
+            + Novo cliente
+          </button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>E-mail</th>
+              <th>CEP</th>
+              <th>Status</th>
+              <th>ID</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-clientes"></tbody>
+        </table>
+      </div>
+    </main>
+
+    <div id="modal-cliente" class="modal-overlay" aria-hidden="true">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-cliente-title">
+        <div class="modal-head">
+          <div>
+            <h2 id="modal-cliente-title">Novo cliente</h2>
+            <p id="modal-cliente-sub">Preencha os dados</p>
+          </div>
+          <button type="button" class="modal-close" id="btn-cancel-cliente-x" aria-label="Fechar">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label for="f-cliente-nome">Nome <span style="color: #b91c1c">*</span></label>
+            <input id="f-cliente-nome" class="field-input" type="text" autocomplete="name" />
+          </div>
+          <div class="field">
+            <label for="f-cliente-email">E-mail</label>
+            <input id="f-cliente-email" class="field-input" type="email" autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="f-cliente-cep">CEP <span style="color: #b91c1c">*</span></label>
+            <input id="f-cliente-cep" class="field-input" type="text" autocomplete="postal-code" />
+          </div>
+        </div>
+        <div class="modal-foot">
+          <button type="button" class="btn btn--ghost" id="btn-cancel-cliente">Cancelar</button>
+          <button type="button" class="btn btn--primary" id="btn-save-cliente">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-confirm-delete" class="modal-overlay" aria-hidden="true">
+      <div class="modal-box" style="max-width: 22rem" role="dialog" aria-modal="true">
+        <div class="modal-body" style="text-align: center; padding-top: 2rem; padding-bottom: 1rem">
+          <h3 class="font-display" style="margin: 0 0 0.5rem">Excluir permanentemente?</h3>
+          <p style="margin: 0.35rem 0 0; font-size: 0.9375rem; color: var(--ink)">
+            <strong id="confirm-del-cliente-nome"></strong>
+          </p>
+          <p style="margin: 0.75rem 0 0; font-size: 0.8125rem; color: var(--ink-muted)">
+            Status atual:
+            <span id="confirm-del-cliente-status" class="badge badge--pendente" style="margin-left: 0.35rem; vertical-align: middle"></span>
+          </p>
+          <p style="margin: 0.75rem 0 0; font-size: 0.8125rem; color: var(--ink-muted); line-height: 1.45">
+            O cliente será <strong>removido permanentemente</strong> do banco de dados. Se houver vínculos que
+            impeçam a exclusão, o servidor retornará uma mensagem explicando o motivo.
+          </p>
+        </div>
+        <div class="modal-foot" style="justify-content: center">
+          <button type="button" class="btn btn--ghost" id="btn-confirm-del-no">Cancelar</button>
+          <button type="button" class="btn btn--danger" id="btn-confirm-del-yes">Excluir permanentemente</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api.js"></script>
+    <script src="../js/ui.js"></script>
+    <script src="../js/layout.js"></script>
+    <script src="../js/clientes-page.js"></script>
+    <script>
+      document.getElementById('btn-cancel-cliente-x').addEventListener('click', function () {
+        window.VendasApp.closeModal('modal-cliente');
+      });
+    </script>
+  </body>
+</html>
