@@ -5,7 +5,7 @@
 (function (global) {
   global.VendasApp = global.VendasApp || {};
   global.VendasApp.config = {
-    apiBaseUrl: 'https://backend-vendas-start.onrender.com',
+    apiBaseUrl: 'https://backend-vendas-start-vzpw.onrender.com',
   };
 
   global.VendasApp.getApiBaseUrl = function () {
